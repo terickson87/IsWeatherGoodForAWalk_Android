@@ -37,7 +37,7 @@ public class GetLocation implements LocationListener {
 
     // ***** Main functionality *****
     public void getLocation() {
-        getPermissions();
+        getPermissions(true);
         setLocations();
     }
 
@@ -49,11 +49,13 @@ public class GetLocation implements LocationListener {
         return ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void getPermissions() {
+    public void getPermissions(boolean getLocation) {
         if (!isCoarseLocationPermission() || !isFineLocationPermission()) {
             ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, mc_REQUEST_LOCATION_PERMISSION);
         } else {
-            getAndHandleGoodLocation();
+            if (getLocation) {
+                getAndHandleGoodLocation();
+            }
         }
     }
 
@@ -61,7 +63,7 @@ public class GetLocation implements LocationListener {
         // This check must be local to prevent lint errors
         if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            getPermissions();
+            getPermissions(true);
             return;
         }
 

@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mGetLocation = new GetLocation(this);
-        mGetLocation.getLocation();
+        mGetLocation.getPermissions(false);
     }
 
     @Override
@@ -56,8 +56,10 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        // Get the permissions if requested
+        if (id == R.id.action_location) {
+            mGetLocation.getPermissions(false);
+            // Create a toast
             return true;
         }
 

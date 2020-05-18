@@ -10,11 +10,15 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 public class FirstFragment extends Fragment {
+    private GetLocation mGetLocation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View fragmentview =  inflater.inflate(R.layout.fragment_first, container, false);
+
+        mGetLocation = new GetLocation(getActivity());
+        mGetLocation.getLocation();
 
         return  fragmentview;
     }
@@ -31,4 +35,11 @@ public class FirstFragment extends Fragment {
         });
 
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mGetLocation.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
 }
