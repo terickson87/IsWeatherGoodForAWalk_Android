@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -15,12 +16,11 @@ public class FirstFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View fragmentview =  inflater.inflate(R.layout.fragment_first, container, false);
+        View fragmentView =  inflater.inflate(R.layout.fragment_first, container, false);
 
-        mGetLocation = new GetLocation(getActivity());
-        mGetLocation.getLocation();
+        getAndUseLocation(fragmentView);
 
-        return  fragmentview;
+        return  fragmentView;
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -34,6 +34,23 @@ public class FirstFragment extends Fragment {
             }
         });
 
+    }
+
+    private void getAndUseLocation(View fragmentView) {
+        mGetLocation = new GetLocation(getActivity());
+        mGetLocation.getLocation();
+        if (mGetLocation.isLocationPermissions()) {
+            Double latitude = mGetLocation.getLatitude();
+            Double longitude = mGetLocation.getLongitude();
+            String cityName = mGetLocation.getCityName();
+            String stateName = mGetLocation.getStateName();
+            String fullLocationString = "Latitude: " + latitude.toString()
+                    + "\nLongitude: " + longitude.toString()
+                    + "\nCity: " + cityName
+                    + "\nState: " + stateName;
+            TextView textView = fragmentView.findViewById(R.id.textview_first);
+            textView.setText(fullLocationString);
+        }
     }
 
     @Override

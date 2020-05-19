@@ -10,4 +10,6 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="location_permissions_snackbar">Getting Location Permissions.</string>
+    <string name="menu_refresh">Refresh</string>
 </resources>

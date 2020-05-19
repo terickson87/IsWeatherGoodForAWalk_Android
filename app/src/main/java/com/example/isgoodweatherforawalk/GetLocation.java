@@ -49,10 +49,16 @@ public class GetLocation implements LocationListener {
         return ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
+    public boolean isLocationPermissions() {
+        return  isCoarseLocationPermission() && isFineLocationPermission();
+    }
+
     public void getPermissions(boolean getLocation) {
         if (!isCoarseLocationPermission() || !isFineLocationPermission()) {
+            System.out.println(TAG + " - GetPermissions: Location Permissions Not Yet Granted.");
             ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, mc_REQUEST_LOCATION_PERMISSION);
         } else {
+            System.out.println(TAG + " - GetPermissions: Location Permissions Granted.");
             if (getLocation) {
                 getAndHandleGoodLocation();
             }
@@ -70,10 +76,10 @@ public class GetLocation implements LocationListener {
         Location location = mLocationManager.getLastKnownLocation(mLocationManager.GPS_PROVIDER);
 
         if (location != null) {
-            System.out.println(TAG + "getPermissions - Non Null Location");
+            System.out.println(TAG + "getAndHandleGoodLocation - Non Null Location");
             handleGoodLocation(location);
         } else {
-            System.out.println(TAG + "getPermissions - Null Location");
+            System.out.println(TAG + "getAndHandleGoodLocation - Null Location");
             Criteria criteria = new Criteria();
             String bestProvider = String.valueOf(mLocationManager.getBestProvider(criteria, true)).toString();
             mLocationManager.requestLocationUpdates(bestProvider, 1000, 0, this);

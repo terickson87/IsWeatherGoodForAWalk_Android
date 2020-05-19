@@ -59,8 +59,12 @@ public class MainActivity extends AppCompatActivity {
         // Get the permissions if requested
         if (id == R.id.action_location) {
             mGetLocation.getPermissions(false);
-            // Create a toast
+            Snackbar.make(findViewById(R.id.main_activity_coordinator_layout), R.string.location_permissions_snackbar, Snackbar.LENGTH_SHORT);
             return true;
+
+        } else if (id == R.id.menu_refresh) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_first, new FirstFragment()).commit();
+            
         }
 
         return super.onOptionsItemSelected(item);
