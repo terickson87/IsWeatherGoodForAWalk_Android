@@ -7,6 +7,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.View;
 import android.view.Menu;
@@ -56,17 +58,37 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        // Get the permissions if requested
         if (id == R.id.action_location) {
+            // Get the permissions if requested
             mGetLocation.getPermissions(false);
             Snackbar.make(findViewById(R.id.main_activity_coordinator_layout), R.string.location_permissions_snackbar, Snackbar.LENGTH_SHORT);
             return true;
 
         } else if (id == R.id.menu_refresh) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_first, new FirstFragment()).commit();
-            
+            // Refresh the current fragment (Does Not work)
+            Fragment fragment = getVisibleFragment();
+            System.out.println("Fragment Found, Class: " + fragment.getClass());
+            if (fragment instanceof HomeFragment) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_first, new HomeFragment()).commit();
+            }
+
+        } else if (id == R.id.menu_units) {
+            // Pop up unit selection dialog
+            // Set toast for units set
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private Fragment getVisibleFragment() {
+        FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
+        Fragment primaryNavigationFragment = fragmentManager.getPrimaryNavigationFragment();
+        return  primaryNavigationFragment;
+//        List<Fragment> fragments = fragmentManager.getFragments();
+//        for (Fragment fragment : fragments) {
+//            if (fragment != null && fragment.isVisible())
+//                return fragment;
+//        }
+//        return null;
     }
 }
