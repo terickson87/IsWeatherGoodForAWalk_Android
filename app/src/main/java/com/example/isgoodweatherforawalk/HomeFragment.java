@@ -10,13 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-public class FirstFragment extends Fragment {
+public class HomeFragment extends Fragment {
     private GetLocation mGetLocation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View fragmentView =  inflater.inflate(R.layout.fragment_first, container, false);
+        View fragmentView =  inflater.inflate(R.layout.fragment_home, container, false);
 
         getAndUseLocation(fragmentView);
 
@@ -29,7 +29,7 @@ public class FirstFragment extends Fragment {
         view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(FirstFragment.this)
+                NavHostFragment.findNavController(HomeFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
