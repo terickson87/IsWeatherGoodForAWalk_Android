@@ -93,6 +93,7 @@ class DailyWeatherData {
     Double m_WindSpeed;
     WeatherObj m_WeatherObj;
     Double m_PrecipitationVolume; // mm
+    Double m_SnowVolume; // mm
 }
 
 public class OpenWeatherApi {
@@ -142,6 +143,23 @@ public class OpenWeatherApi {
     private List<HourlyWeatherData> m_HourlyWeatherData;
     private List<DailyWeatherData> m_DailyWeatherData;
 
+    // Getters
+    public CurrentWeatherData getCurrentWeatherData() {
+        return m_CurrentWeatherData;
+    }
+
+    public List<MinutelyWeatherData> getMinutelyWeatherData() {
+        return m_MinutelyWeatherData;
+    }
+
+    public List<HourlyWeatherData> getHourlyWeatherData() {
+        return m_HourlyWeatherData;
+    }
+
+    public List<DailyWeatherData> getDailyWeatherData() {
+        return m_DailyWeatherData;
+    }
+
     // Constructor
     public OpenWeatherApi(Context context, double latitude, double longitude) {
         m_Context = context;
@@ -152,12 +170,14 @@ public class OpenWeatherApi {
     }
 
     // Public Methods
-    public void callApi() {
+    public void callApi(final ApiCallback apiCallback) {
+
         // Build Url
         addParamToUrl(mc_LatTag + m_Latitude.toString());
         addParamToUrl(mc_LongTag + m_Longitude.toString());
         addParamToUrl(mc_UnitsTag + mc_UnitsImperial);
         addParamToUrl(mc_ApiTag + mc_ApiKey);
+        System.out.println(TAG + " - callApi Called. ApiUrl = \"" + m_ApiUrl + "\"");
 
         // Build request
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -165,7 +185,7 @@ public class OpenWeatherApi {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        parseResponse(response);
+                        apiCallback.onSuccess(response);
                     }
                 }, new Response.ErrorListener() {
 
@@ -190,12 +210,15 @@ public class OpenWeatherApi {
     }
 
     private void parseResponseJson() {
+        System.out.println(TAG + " - parseResponseJson Called.");
         String currentTag = "current";
         String minutelyTag = "minutely";
         String hourlyTag = "hourly";
         String dailyTag = "daily";
 
         try {
+            m_TimezoneString = m_ResponseJson.getString("timezone");
+            m_TimezoneOffset_s = m_ResponseJson.getInt("timezone_offset");
             m_CurrentJson = m_ResponseJson.getJSONObject(currentTag);
             m_MinutelyJson = m_ResponseJson.getJSONArray(minutelyTag);
             m_HourlyJson = m_ResponseJson.getJSONArray(hourlyTag);
@@ -207,7 +230,8 @@ public class OpenWeatherApi {
         }
     }
 
-    private void parseResponse(JSONObject response) {
+    public void parseResponse(JSONObject response) {
+        System.out.println(TAG + " - parseResponse Called.");
         m_ResponseJson = response;
         parseResponseJson();
         parseCurrent();
@@ -217,6 +241,7 @@ public class OpenWeatherApi {
     }
 
     private WeatherObj parseWeatherJson(JSONObject parentObjOfWeatherJsonArr) {
+        System.out.println(TAG + " - parseWeatherJson Called.");
         WeatherObj weatherObj = new WeatherObj();
         JSONArray weatherJsonArr = null;
         try {
@@ -233,6 +258,7 @@ public class OpenWeatherApi {
     }
 
     private void parseCurrent() {
+        System.out.println(TAG + " - ParseCurrent Called.");
         m_CurrentWeatherData = new CurrentWeatherData();
         try {
             m_CurrentWeatherData.m_Time = Instant.ofEpochSecond(m_CurrentJson.getLong("dt"));
@@ -251,6 +277,7 @@ public class OpenWeatherApi {
     }
 
     private void parseMinutely() {
+        System.out.println(TAG + " - parseMinutely Called.");
         m_MinutelyWeatherData = new LinkedList<MinutelyWeatherData>();
         try {
             for (int iMinute = 0; iMinute < m_MinutelyJson.length(); iMinute++) {
@@ -270,6 +297,7 @@ public class OpenWeatherApi {
     }
 
     private void parseHourly() {
+        System.out.println(TAG + " - parseHourly Called.");
         m_HourlyWeatherData = new LinkedList<HourlyWeatherData>();
         try {
             for (int iHour = 0; iHour < m_HourlyJson.length(); iHour++) {
@@ -291,12 +319,12 @@ public class OpenWeatherApi {
     }
 
     private void parseDaily() {
+        System.out.println(TAG + " - parseDaily Called.");
         m_DailyWeatherData = new LinkedList<DailyWeatherData>();
-        try {
-            for (int iDay = 0; iDay < m_DailyJson.length(); iDay++) {
+        for (int iDay = 0; iDay < m_DailyJson.length(); iDay++) {
+            DailyWeatherData dailyWeatherData = new DailyWeatherData();
+            try {
                 JSONObject dayJson = m_DailyJson.getJSONObject(iDay);
-                DailyWeatherData dailyWeatherData = new DailyWeatherData();
-
                 dailyWeatherData.m_Time = Instant.ofEpochSecond(dayJson.getLong("dt"));
                 dailyWeatherData.m_SunriseTime = Instant.ofEpochSecond(dayJson.getLong("sunrise"));
                 dailyWeatherData.m_SunsetTime = Instant.ofEpochSecond(dayJson.getLong("sunset"));
@@ -305,19 +333,30 @@ public class OpenWeatherApi {
                 dailyWeatherData.m_WindSpeed = dayJson.getDouble("wind_speed");
                 dailyWeatherData.m_WeatherObj = parseWeatherJson(dayJson);
                 dailyWeatherData.m_PercentCloudy = dayJson.getInt("clouds");
-                dailyWeatherData.m_PrecipitationVolume = dayJson.getDouble("rain");
-
-                m_DailyWeatherData.add(dailyWeatherData);
+                try {
+                    dailyWeatherData.m_PrecipitationVolume = dayJson.getDouble("rain");
+                } catch(JSONException e) {
+                    dailyWeatherData.m_PrecipitationVolume = 0.0;
+                }
+                try {
+                    dailyWeatherData.m_SnowVolume = dayJson.getDouble("snow");
+                } catch(JSONException e) {
+                    dailyWeatherData.m_SnowVolume = 0.0;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
+
+            m_DailyWeatherData.add(dailyWeatherData);
+            }
+
     }
 
     private DailyTemp parseDailyTemp(JSONObject parentObjOfDailyTempJsonObj) {
         DailyTemp dailyTemp = new DailyTemp();
         try {
-            JSONObject dailyTempJsonObj = parentObjOfDailyTempJsonObj.getJSONObject("feels_like");
+            JSONObject dailyTempJsonObj = parentObjOfDailyTempJsonObj.getJSONObject("temp");
             dailyTemp.m_Day = dailyTempJsonObj.getDouble("day");
             dailyTemp.m_Night = dailyTempJsonObj.getDouble("night");
             dailyTemp.m_Evening = dailyTempJsonObj.getDouble("eve");

@@ -14,8 +14,14 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
-    private GetLocation mGetLocation;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements SendWeatherData, SendLocationData {
+    private GetLocation m_GetLocation;
+    private CurrentWeatherData m_CurrentWeatherData;
+    private List<MinutelyWeatherData> m_MinutelyWeatherData;
+    private List<HourlyWeatherData> m_HourlyWeatherData;
+    private List<DailyWeatherData> m_DailyWeatherData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +40,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mGetLocation = new GetLocation(this);
-        mGetLocation.getPermissions(false);
+        m_GetLocation = new GetLocation(this);
+        m_GetLocation.getPermissions(false);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mGetLocation.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        m_GetLocation.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -58,19 +64,16 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // TODO add other fragments and add bundles to pass the weather and location data between fragments.
         if (id == R.id.action_location) {
             // Get the permissions if requested
-            mGetLocation.getPermissions(false);
+            m_GetLocation.getPermissions(false);
             Snackbar.make(findViewById(R.id.main_activity_coordinator_layout), R.string.location_permissions_snackbar, Snackbar.LENGTH_SHORT);
             return true;
 
         } else if (id == R.id.menu_refresh) {
             // Refresh the current fragment (Does Not work)
-            Fragment fragment = getVisibleFragment();
-            System.out.println("Fragment Found, Class: " + fragment.getClass());
-            if (fragment instanceof HomeFragment) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_first, new HomeFragment()).commit();
-            }
+            // TODO add swipe to refresh
 
         } else if (id == R.id.menu_units) {
             // Pop up unit selection dialog
@@ -80,15 +83,28 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private Fragment getVisibleFragment() {
-        FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
-        Fragment primaryNavigationFragment = fragmentManager.getPrimaryNavigationFragment();
-        return  primaryNavigationFragment;
-//        List<Fragment> fragments = fragmentManager.getFragments();
-//        for (Fragment fragment : fragments) {
-//            if (fragment != null && fragment.isVisible())
-//                return fragment;
-//        }
-//        return null;
+    @Override
+    public void sendCurrentWeatherData(CurrentWeatherData currentWeatherData) {
+        m_CurrentWeatherData = currentWeatherData;
+    }
+
+    @Override
+    public void sendMinutelyWeatherData(List<MinutelyWeatherData> minutelyWeatherData) {
+        m_MinutelyWeatherData = minutelyWeatherData;
+    }
+
+    @Override
+    public void sendHourlyWeatherData(List<HourlyWeatherData> hourlyWeatherData) {
+        m_HourlyWeatherData = hourlyWeatherData;
+    }
+
+    @Override
+    public void sendDailyWeatherData(List<DailyWeatherData> dailyWeatherData) {
+        m_DailyWeatherData = dailyWeatherData;
+    }
+
+    @Override
+    public void sendLocation(GetLocation getLocation) {
+        m_GetLocation = getLocation;
     }
 }

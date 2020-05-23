@@ -1,5 +1,6 @@
 package com.example.isgoodweatherforawalk;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import org.json.JSONObject;
+
 public class HomeFragment extends Fragment {
-    private GetLocation mGetLocation;
+    private GetLocation m_GetLocation;
+    private ApiCallback m_ApiCallback;
+    private OpenWeatherApi m_OpenWeatherApi;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -19,6 +24,7 @@ public class HomeFragment extends Fragment {
         View fragmentView =  inflater.inflate(R.layout.fragment_home, container, false);
 
         getAndUseLocation(fragmentView);
+
 
         return  fragmentView;
     }
@@ -37,26 +43,44 @@ public class HomeFragment extends Fragment {
     }
 
     private void getAndUseLocation(View fragmentView) {
-        mGetLocation = new GetLocation(getActivity());
-        mGetLocation.getLocation();
-        if (mGetLocation.isLocationPermissions()) {
-            Double latitude = mGetLocation.getLatitude();
-            Double longitude = mGetLocation.getLongitude();
-            String cityName = mGetLocation.getCityName();
-            String stateName = mGetLocation.getStateName();
+        m_GetLocation = new GetLocation(getActivity());
+        m_GetLocation.getLocation();
+        if (m_GetLocation.isLocationPermissions()) {
+            Double latitude = m_GetLocation.getLatitude();
+            Double longitude = m_GetLocation.getLongitude();
+            String cityName = m_GetLocation.getCityName();
+            String stateName = m_GetLocation.getStateName();
             String fullLocationString = "Latitude: " + latitude.toString()
                     + "\nLongitude: " + longitude.toString()
                     + "\nCity: " + cityName
                     + "\nState: " + stateName;
             TextView textView = fragmentView.findViewById(R.id.textview_first);
             textView.setText(fullLocationString);
+            createAndCallWeatherApi();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mGetLocation.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        m_GetLocation.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        createAndCallWeatherApi();
     }
 
+    private void createAndCallWeatherApi() {
+        m_OpenWeatherApi = new OpenWeatherApi(getContext(), m_GetLocation.getLatitude(), m_GetLocation.getLongitude());
+        m_ApiCallback = new ApiCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                m_OpenWeatherApi.parseResponse(response);
+                Activity activity = getActivity();
+                SendWeatherData sendWeatherData = (SendWeatherData) activity;
+                sendWeatherData.sendCurrentWeatherData(m_OpenWeatherApi.getCurrentWeatherData());
+                sendWeatherData.sendMinutelyWeatherData(m_OpenWeatherApi.getMinutelyWeatherData());
+                sendWeatherData.sendHourlyWeatherData(m_OpenWeatherApi.getHourlyWeatherData());
+                sendWeatherData.sendDailyWeatherData(m_OpenWeatherApi.getDailyWeatherData());
+            }
+        };
+        m_OpenWeatherApi.callApi(m_ApiCallback);
+    }
 }
