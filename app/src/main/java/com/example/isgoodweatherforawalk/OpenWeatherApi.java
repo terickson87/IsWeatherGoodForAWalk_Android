@@ -160,6 +160,14 @@ public class OpenWeatherApi {
         return m_DailyWeatherData;
     }
 
+    public String getTimezoneString() {
+        return m_TimezoneString;
+    }
+
+    public Integer getTimezoneOffset_s() {
+        return m_TimezoneOffset_s;
+    }
+
     // Constructor
     public OpenWeatherApi(Context context, double latitude, double longitude) {
         m_Context = context;

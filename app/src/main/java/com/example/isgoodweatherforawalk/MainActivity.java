@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements SendWeatherData, 
         });
 
         m_GetLocation = new GetLocation(this);
-        m_GetLocation.getPermissions(false);
+        m_GetLocation.getPermissions(true);
     }
 
     @Override
@@ -106,5 +106,25 @@ public class MainActivity extends AppCompatActivity implements SendWeatherData, 
     @Override
     public void sendLocation(GetLocation getLocation) {
         m_GetLocation = getLocation;
+    }
+
+    public GetLocation getGetLocation() {
+        return m_GetLocation;
+    }
+
+    public CurrentWeatherData getCurrentWeatherData() {
+        return m_CurrentWeatherData;
+    }
+
+    public List<MinutelyWeatherData> getMinutelyWeatherData() {
+        return m_MinutelyWeatherData;
+    }
+
+    public List<HourlyWeatherData> getHourlyWeatherData() {
+        return m_HourlyWeatherData;
+    }
+
+    public List<DailyWeatherData> getDailyWeatherData() {
+        return m_DailyWeatherData;
     }
 }

@@ -8,9 +8,20 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_first_fragment">Is it going to rain for this walk?</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="location_permissions_snackbar">Getting Location Permissions.</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_units">Select Units</string>
+    <string name="temperature_title">Temperature:</string>
+    <string name="feels_like_title">Feel\'s Like:</string>
+    <string name="sunrise_title">Sunrise:</string>
+    <string name="sunset_title">Sunset:</string>
+    <string name="temperature_default_value">0 F</string>
+    <string name="percent_cloudy_title">% cloudy:</string>
+    <string name="percent_cloudy_default_value">0%</string>
+    <string name="sunrise_default_value">6 am (-30 min)</string>
+    <string name="sunset_default_value">6 pm (30 min)</string>
+    <string name="homefrag_forecast_time_title">as of</string>
+    <string name="homefrag_forecast_time_default_value">6 pm (30 min ago)</string>
 </resources>
