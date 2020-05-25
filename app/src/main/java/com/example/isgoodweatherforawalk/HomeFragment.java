@@ -126,35 +126,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void setTimeValue(TextView textView, Instant now, Instant other, Integer timeZoneOffset_s) {
-        // Get the clock time string, e.g. 06:00 pm
-        ZoneOffset zoneOffset = ZoneOffset.ofHoursMinutesSeconds(0, 0, timeZoneOffset_s);
-        ZoneId zone = ZoneId.ofOffset("UTC", zoneOffset);
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(other, zone);
-        String localDateTimeString = localDateTime.format(DateTimeFormatter.ofPattern("hh:mm aa"));
-
-        // Get the time difference string, e.g. 6 hr ago
-        Long diff = now.getEpochSecond() - other.getEpochSecond();
-        Long diffVal;
-        String diffLabel;
-        if (diff/3600.0 > 1) {
-            diffVal = diff/3600;
-            diffLabel = "hr";
-        } else if (diff/60.0 > 1) {
-            diffVal = diff/60;
-            diffLabel = "min";
-        } else {
-            diffVal = diff;
-            diffLabel = "s";
-        }
-        String diffString;
-        if (diff > 0) { // now is after other, ie other happened first
-            diffString = diffVal + " " + diffLabel + " " + "ago";
-        } else { // other is after now, ie now happened first
-            diffString = "in"+ " " + diffVal + " " + diffLabel;
-        }
-
-        // Build and set the full string
-        String fullTimeString = localDateTimeString + " (" + diffString + ")";
-        textView.setText(fullTimeString);
+        TimeCalculation timeCalculation = new TimeCalculation(now, other, timeZoneOffset_s, "hh:mm aa");
+        textView.setText(timeCalculation.getFullTimeString());
     }
 }
