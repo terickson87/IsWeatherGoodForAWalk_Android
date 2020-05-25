@@ -34,7 +34,7 @@ class WeatherObj {
         m_IconUrl = iconUrl;
     }
 
-    String getIcon() {
+    String getIconUrl() {
         return m_IconUrl;
     }
 
@@ -251,11 +251,12 @@ public class OpenWeatherApi {
     private WeatherObj parseWeatherJson(JSONObject parentObjOfWeatherJsonArr) {
         System.out.println(TAG + " - parseWeatherJson Called.");
         WeatherObj weatherObj = new WeatherObj();
-        JSONArray weatherJsonArr = null;
+        JSONArray weatherJsonArr;
         try {
             weatherJsonArr = parentObjOfWeatherJsonArr.getJSONArray("weather");
             JSONObject weatherJsonObj = weatherJsonArr.getJSONObject(0);
             weatherObj.m_Description = weatherJsonObj.getString("description");
+            weatherObj.m_MainDescriptionShort = weatherJsonObj.getString("main");
             weatherObj.setIcon(weatherJsonObj.getString("icon"));
 
         } catch (JSONException e) {
@@ -286,7 +287,7 @@ public class OpenWeatherApi {
 
     private void parseMinutely() {
         System.out.println(TAG + " - parseMinutely Called.");
-        m_MinutelyWeatherData = new LinkedList<MinutelyWeatherData>();
+        m_MinutelyWeatherData = new LinkedList<>();
         try {
             for (int iMinute = 0; iMinute < m_MinutelyJson.length(); iMinute++) {
                 JSONObject minuteJson = m_MinutelyJson.getJSONObject(iMinute);
@@ -306,7 +307,7 @@ public class OpenWeatherApi {
 
     private void parseHourly() {
         System.out.println(TAG + " - parseHourly Called.");
-        m_HourlyWeatherData = new LinkedList<HourlyWeatherData>();
+        m_HourlyWeatherData = new LinkedList<>();
         try {
             for (int iHour = 0; iHour < m_HourlyJson.length(); iHour++) {
                 JSONObject hourJson = m_HourlyJson.getJSONObject(iHour);
@@ -328,7 +329,7 @@ public class OpenWeatherApi {
 
     private void parseDaily() {
         System.out.println(TAG + " - parseDaily Called.");
-        m_DailyWeatherData = new LinkedList<DailyWeatherData>();
+        m_DailyWeatherData = new LinkedList<>();
         for (int iDay = 0; iDay < m_DailyJson.length(); iDay++) {
             DailyWeatherData dailyWeatherData = new DailyWeatherData();
             try {

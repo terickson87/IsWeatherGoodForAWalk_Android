@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,12 +15,14 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
     private View m_FragmentView;
@@ -61,7 +64,7 @@ public class HomeFragment extends Fragment {
                     + "\nLongitude: " + longitude.toString()
                     + "\nCity: " + cityName
                     + "\nState: " + stateName;
-            TextView textView = fragmentView.findViewById(R.id.textview_first);
+            TextView textView = fragmentView.findViewById(R.id.homefrag_title);
             textView.setText(fullLocationString);
             createAndCallWeatherApi();
         }
@@ -123,6 +126,10 @@ public class HomeFragment extends Fragment {
         TextView homefragForcastTimeValue = m_FragmentView.findViewById(R.id.homefrag_forcast_time_value);
         setTimeValue(homefragForcastTimeValue, now, forecastTime, timeZoneOffset_s);
 
+        // Set the icon
+        String iconUrl = currentWeatherData.m_WeatherObj.getIconUrl();
+        ImageView iconImageView = m_FragmentView.findViewById(R.id.homefrag_weather_icon);
+        Picasso.with(requireActivity().getApplicationContext()).load(iconUrl).into(iconImageView);
         makeMinutelyRainChart();
     }
 
