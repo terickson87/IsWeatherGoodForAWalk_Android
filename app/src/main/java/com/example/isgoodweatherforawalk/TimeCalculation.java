@@ -6,7 +6,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-public class TimeCalculation {
+public class TimeCalculation<T> {
     // Member Variables
     private Instant m_Now;
     private Instant m_Other;
@@ -14,7 +14,7 @@ public class TimeCalculation {
     private ZoneOffset m_ZoneOffset = ZoneOffset.ofHoursMinutesSeconds(0, 0, m_TimezoneOffset_s);
     private ZoneId m_ZoneId = ZoneId.ofOffset("UTC", m_ZoneOffset);
     private LocalDateTime m_LocalDateTime;
-    private String m_DateTimeFormatterPattern = "hh:mm aa";
+    private String m_DateTimeFormatterPattern = "h:mm a";
     private DateTimeFormatter m_DateTimeFormatter = DateTimeFormatter.ofPattern(m_DateTimeFormatterPattern);
     private String m_LocalDateTimeString;
     private String m_DiffString;
@@ -120,7 +120,10 @@ public class TimeCalculation {
 
     private void buildLocalDateTimeString() {
         // Get the clock time string, e.g. 06:00 pm
-        m_ZoneOffset = ZoneOffset.ofHoursMinutesSeconds(0, 0, m_TimezoneOffset_s);
+        int hoursOffset = getHours(m_TimezoneOffset_s);
+        int minutesOffset = getMinutes(m_TimezoneOffset_s);
+        int secondsOffset = getSeconds(m_TimezoneOffset_s);
+        m_ZoneOffset = ZoneOffset.ofHoursMinutesSeconds(hoursOffset, minutesOffset, secondsOffset);
         m_ZoneId = ZoneId.ofOffset("UTC", m_ZoneOffset);
         m_LocalDateTime = LocalDateTime.ofInstant(m_Other, m_ZoneId);
         m_LocalDateTimeString = m_LocalDateTime.format(m_DateTimeFormatter);
@@ -128,24 +131,59 @@ public class TimeCalculation {
 
     private void buildDiffString() {
         // Get the time difference string, e.g. 6 hr ago
-        Long diff = m_Now.getEpochSecond() - m_Other.getEpochSecond();
-        Long diffVal;
+        long diff = m_Now.getEpochSecond() - m_Other.getEpochSecond();
+        long diffVal;
         String diffLabel;
-        if (diff/3600.0 > 1) {
-            diffVal = diff/3600;
+        diffVal = getHours(diff);
+        if (diffVal > 0) {
             diffLabel = "hr";
-        } else if (diff/60.0 > 1) {
-            diffVal = diff/60;
-            diffLabel = "min";
         } else {
-            diffVal = diff;
-            diffLabel = "s";
+            diffVal = getMinutes(diff);
+            if (diffVal > 0) {
+                diffLabel = "min";
+            } else {
+                diffVal = getSeconds(diff);
+                diffLabel = "s";
+            }
         }
+
         if (diff > 0) { // now is after other, ie other happened first
             m_DiffString = diffVal + " " + diffLabel + " " + "ago";
         } else { // other is after now, ie now happened first
-            m_DiffString = "in"+ " " + diffVal + " " + diffLabel;
+            m_DiffString = "in"+ " " + -diffVal + " " + diffLabel;
         }
+    }
+
+    private int getHours(int seconds) {
+        return seconds/3600;
+    }
+
+    private int getMinutes(int seconds) {
+        int hours = getHours(seconds);
+        seconds -= hours*3600;
+        return seconds/60;
+    }
+
+    private int getSeconds(int seconds) {
+        int hours = getHours(seconds);
+        int minutes = getMinutes(seconds);
+        return seconds - hours*3600 - minutes*60;
+    }
+
+    private long getHours(long seconds) {
+        return seconds/3600;
+    }
+
+    private long getMinutes(long seconds) {
+        long hours = getHours(seconds);
+        seconds -= hours*3600;
+        return seconds/60;
+    }
+
+    private long getSeconds(long seconds) {
+        long hours = getHours(seconds);
+        long minutes = getMinutes(seconds);
+        return seconds - hours*3600 - minutes*60;
     }
 
     private void buildFullTimeString() {

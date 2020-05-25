@@ -130,6 +130,7 @@ public class HomeFragment extends Fragment {
         String iconUrl = currentWeatherData.m_WeatherObj.getIconUrl();
         ImageView iconImageView = m_FragmentView.findViewById(R.id.homefrag_weather_icon);
         Picasso.with(requireActivity().getApplicationContext()).load(iconUrl).into(iconImageView);
+
         makeMinutelyRainChart();
     }
 
@@ -167,7 +168,7 @@ public class HomeFragment extends Fragment {
         for (int iMinute = 0; iMinute < minutelyWeatherDataList.size(); iMinute++) {
             MinutelyWeatherData minutelyWeatherData = minutelyWeatherDataList.get(iMinute);
             Instant time = minutelyWeatherData.m_Time;
-            int diff_sec = (int) (m_OpenWeatherApi.getCurrentWeatherData().m_Time.getEpochSecond() - time.getEpochSecond());
+            int diff_sec = (int) (time.getEpochSecond() - m_OpenWeatherApi.getCurrentWeatherData().m_Time.getEpochSecond());
             if (diff_sec >= 0) {
                 int diff_min = diff_sec/60;
                 float PrecipitationVolume = (float) (double) minutelyWeatherData.m_PrecipitationVolume;
