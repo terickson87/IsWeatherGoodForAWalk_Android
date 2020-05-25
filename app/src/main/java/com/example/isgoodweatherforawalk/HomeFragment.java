@@ -10,19 +10,20 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
     private View m_FragmentView;
     private GetLocation m_GetLocation;
-    private ApiCallback m_ApiCallback;
     private OpenWeatherApi m_OpenWeatherApi;
 
     @Override
@@ -67,7 +68,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         m_GetLocation.onRequestPermissionsResult(requestCode, permissions, grantResults);
         createAndCallWeatherApi();
@@ -75,19 +76,21 @@ public class HomeFragment extends Fragment {
 
     private void createAndCallWeatherApi() {
         m_OpenWeatherApi = new OpenWeatherApi(getContext(), m_GetLocation.getLatitude(), m_GetLocation.getLongitude());
-        m_ApiCallback = new ApiCallback() {
+        ApiCallback apiCallback = new ApiCallback() {
             @Override
             public void onSuccess(JSONObject response) {
                 m_OpenWeatherApi.parseResponse(response);
                 SendWeatherData sendWeatherData = (SendWeatherData) getActivity();
-                sendWeatherData.sendCurrentWeatherData(m_OpenWeatherApi.getCurrentWeatherData());
-                sendWeatherData.sendMinutelyWeatherData(m_OpenWeatherApi.getMinutelyWeatherData());
-                sendWeatherData.sendHourlyWeatherData(m_OpenWeatherApi.getHourlyWeatherData());
-                sendWeatherData.sendDailyWeatherData(m_OpenWeatherApi.getDailyWeatherData());
+                if (sendWeatherData != null) {
+                    sendWeatherData.sendCurrentWeatherData(m_OpenWeatherApi.getCurrentWeatherData());
+                    sendWeatherData.sendMinutelyWeatherData(m_OpenWeatherApi.getMinutelyWeatherData());
+                    sendWeatherData.sendHourlyWeatherData(m_OpenWeatherApi.getHourlyWeatherData());
+                    sendWeatherData.sendDailyWeatherData(m_OpenWeatherApi.getDailyWeatherData());
+                }
                 setWeatherValues();
             }
         };
-        m_OpenWeatherApi.callApi(m_ApiCallback);
+        m_OpenWeatherApi.callApi(apiCallback);
     }
 
     private void setWeatherValues() {
@@ -119,10 +122,52 @@ public class HomeFragment extends Fragment {
         Instant forecastTime = currentWeatherData.m_Time;
         TextView homefragForcastTimeValue = m_FragmentView.findViewById(R.id.homefrag_forcast_time_value);
         setTimeValue(homefragForcastTimeValue, now, forecastTime, timeZoneOffset_s);
+
+        makeMinutelyRainChart();
     }
 
     private void makeMinutelyRainChart() {
+        // Get the minutely weather data
+        LineDataSet dataSet = buildLineGraphDataset(m_OpenWeatherApi.getMinutelyWeatherData());
 
+        // Set chart styling
+        dataSet.setColor(R.attr.colorPrimaryDark);
+        dataSet.setCircleColor(R.attr.colorPrimary);
+        dataSet.setCircleHoleColor(R.attr.colorPrimaryDark);
+        dataSet.setValueTextSize(8);
+        dataSet.setValueTextColor(R.attr.colorPrimaryDark);
+
+        // Get the line chart
+        LineChart lineChart = m_FragmentView.findViewById(R.id.homefrag_minutely_rain_chart);
+
+        // Set legend and axis lines
+        lineChart.getLegend().setTextSize(16);
+        lineChart.getLegend().setFormSize(16);
+        lineChart.getLegend().setDrawInside(false);
+        lineChart.getLegend().setXEntrySpace(5);
+        lineChart.getXAxis().setDrawGridLines(false);
+        lineChart.getAxisRight().setDrawGridLines(false);
+        lineChart.getAxisLeft().setDrawGridLines(false);
+
+        // Set chart data and redraw.
+        LineData data = new LineData(dataSet);
+        lineChart.setData(data);
+        lineChart.invalidate();
+    }
+
+    private LineDataSet buildLineGraphDataset(List<MinutelyWeatherData> minutelyWeatherDataList) {
+        List<Entry> entries = new ArrayList<>();
+        for (int iMinute = 0; iMinute < minutelyWeatherDataList.size(); iMinute++) {
+            MinutelyWeatherData minutelyWeatherData = minutelyWeatherDataList.get(iMinute);
+            Instant time = minutelyWeatherData.m_Time;
+            int diff_sec = (int) (m_OpenWeatherApi.getCurrentWeatherData().m_Time.getEpochSecond() - time.getEpochSecond());
+            if (diff_sec >= 0) {
+                int diff_min = diff_sec/60;
+                float PrecipitationVolume = (float) (double) minutelyWeatherData.m_PrecipitationVolume;
+                entries.add(new Entry(diff_min, PrecipitationVolume));
+            }
+        }
+        return new LineDataSet(entries, "Minutely Rain");
     }
 
     private void setTimeValue(TextView textView, Instant now, Instant other, Integer timeZoneOffset_s) {
