@@ -276,9 +276,9 @@ public class OpenWeatherApi {
             m_CurrentWeatherData.m_Temperature = m_CurrentJson.getDouble("temp");
             m_CurrentWeatherData.m_TemperatureFeelsLike = m_CurrentJson.getDouble("feels_like");
             m_CurrentWeatherData.m_PercentCloudy = m_CurrentJson.getInt("clouds");
+            m_CurrentWeatherData.m_WeatherObj = parseWeatherJson(m_CurrentJson);
             m_CurrentWeatherData.m_WindSpeed = m_CurrentJson.getDouble("wind_speed");
             m_CurrentWeatherData.m_WindGust = m_CurrentJson.getDouble("wind_gust");
-            m_CurrentWeatherData.m_WeatherObj = parseWeatherJson(m_CurrentJson);
 
         } catch (JSONException e) {
             e.printStackTrace();
