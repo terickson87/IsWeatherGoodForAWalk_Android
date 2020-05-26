@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/homefrag_minutely_rain_chart"
+        app:layout_constraintBottom_toTopOf="@+id/homefrag_chart_holder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/homefrag_weather_icon"
         app:layout_constraintTop_toBottomOf="@+id/homefrag_title">
@@ -160,8 +160,23 @@
 
     </LinearLayout>
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/homefrag_minutely_rain_chart"
+    <ImageView
+        android:id="@+id/homefrag_weather_icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/border_image"
+        android:cropToPadding="true"
+        android:elevation="3dp"
+        android:padding="1dp"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_mapmode"
+        app:layout_constraintBottom_toTopOf="@+id/homefrag_chart_holder"
+        app:layout_constraintEnd_toStartOf="@id/homefrag_weatherdata_linearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homefrag_title" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/homefrag_chart_holder"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -171,16 +186,28 @@
         app:layout_constraintBottom_toTopOf="@+id/button_first"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homefrag_weatherdata_linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/homefrag_weatherdata_linearLayout"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp">
 
-    <ImageView
-        android:id="@+id/homefrag_weather_icon"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@android:drawable/ic_menu_mapmode"
-        app:layout_constraintBottom_toTopOf="@+id/homefrag_minutely_rain_chart"
-        app:layout_constraintEnd_toStartOf="@id/homefrag_weatherdata_linearLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homefrag_title" />
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/homefrag_minutely_rain_chart"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/homefrag_chart_x_axis_label"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/homefrag_chart_x_axis_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/homefrag_chart_x_axis_label"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/homefrag_chart_labelSize"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
