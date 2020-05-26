@@ -14,6 +14,7 @@ import android.os.Bundle;
 
 import androidx.core.app.ActivityCompat;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,6 +28,7 @@ public class GetLocation implements LocationListener {
     private Double m_Longitude;
     private String m_CityName;
     private String m_StateName;
+    private String m_CountryCode;
     public LocationManager m_LocationManager;
 
     // ***** Constructor *****
@@ -72,7 +74,7 @@ public class GetLocation implements LocationListener {
             return;
         }
 
-        Location location = m_LocationManager.getLastKnownLocation(m_LocationManager.GPS_PROVIDER);
+        Location location = m_LocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         if (location != null) {
             System.out.println(TAG + "getAndHandleGoodLocation - Non Null Location");
@@ -89,10 +91,13 @@ public class GetLocation implements LocationListener {
         m_Latitude = location.getLatitude();
         m_Longitude = location.getLongitude();
         System.out.println(TAG + " handleGoodLocation() - " + "lat: " + m_Latitude + ", long: " + m_Longitude);
-        m_CityName = getCityName(m_Activity, m_Latitude, m_Longitude);
+        Address address = getAddress(m_Activity, m_Latitude, m_Longitude);
+        m_CityName = getCityName(address);
         System.out.println("City Name: " + m_CityName);
-        m_StateName = getStateName(m_Activity, m_Latitude, m_Longitude);
+        m_StateName = getStateName(address);
         System.out.println("State Name: " + m_StateName);
+        m_CountryCode = getCountryCode(address);
+        System.out.println("Country Code: " + m_CountryCode);
         SendLocationData sendLocationData = (SendLocationData) m_Activity;
         sendLocationData.sendLocation(this);
     }
@@ -109,30 +114,29 @@ public class GetLocation implements LocationListener {
         }
     }
 
-    public static String getCityName(Context context, double latitude, double longitude) {
+    public static Address getAddress(Context context, double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        try{
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, mc_MAX_LOCATION_RESULTS);
-            return addresses.get(0).getLocality();
-        }
-        catch(Exception e){
-            System.out.println("Error getting cityname: " + e.getMessage());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, mc_MAX_LOCATION_RESULTS);
+            return addresses.get(0);
+        } catch (IOException e) {
+            System.out.println("Error getting Address: " + e.getMessage());
             e.printStackTrace();
         }
-        return "";
+        return null;
     }
 
-    public static String getStateName(Context context, double latitude, double longitude){
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        try{
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, mc_MAX_LOCATION_RESULTS);
-            return addresses.get(0).getAdminArea();
-        }
-        catch(Exception e){
-            System.out.println("Error getting statename: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return "";
+    public static String getCityName(Address address) {
+        return address.getLocality();
+    }
+
+    public static String getStateName(Address address){
+        return address.getAdminArea();
+    }
+
+    public static String getCountryCode(Address address) {
+        return address.getCountryCode();
     }
 
     // ***** Setters *****
@@ -167,6 +171,10 @@ public class GetLocation implements LocationListener {
 
     public String getStateName() {
         return m_StateName;
+    }
+
+    public String getCountryCode() {
+        return m_CountryCode;
     }
 
     /**
