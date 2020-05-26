@@ -81,6 +81,7 @@ class HourlyWeatherData {
     Double m_TemperatureFeelsLike;
     Integer m_PercentCloudy;
     Double m_WindSpeed;
+    Double m_WindGust;
     Double m_PrecipitationVolume; // mm
     Double m_SnowVolume; // mm
     WeatherObj m_WeatherObj;
@@ -95,6 +96,7 @@ class DailyWeatherData {
     DailyTempFeelsLike m_DailyTempFeelsLike;
     Integer m_PercentCloudy;
     Double m_WindSpeed;
+    Double m_WindGust;
     Double m_PrecipitationVolume; // mm
     Double m_SnowVolume; // mm
     WeatherObj m_WeatherObj;
@@ -282,24 +284,29 @@ public class OpenWeatherApi {
             m_CurrentWeatherData.m_PercentCloudy = m_CurrentJson.getInt("clouds");
             m_CurrentWeatherData.m_WeatherObj = parseWeatherJson(m_CurrentJson);
             m_CurrentWeatherData.m_WindSpeed = m_CurrentJson.getDouble("wind_speed");
-            m_CurrentWeatherData.m_WindGust = m_CurrentJson.getDouble("wind_gust");
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        double windGust = 0.0;
+        try {
+            windGust += m_CurrentJson.getDouble("wind_gust");
+        } catch (JSONException ignored) {}
+        m_CurrentWeatherData.m_WindGust = windGust;
 
         double precipitationVolume = 0.0;
         try {
             JSONObject rain = m_CurrentJson.getJSONObject("rain");
             precipitationVolume += rain.getDouble("1hr");
         } catch (JSONException ignored) {}
+        m_CurrentWeatherData.m_PrecipitationVolume = precipitationVolume;
 
         double snowVolume = 0.0;
         try {
             JSONObject snow = m_CurrentJson.getJSONObject("snow");
             snowVolume += snow.getDouble("1hr");
         } catch (JSONException ignored) {}
-        m_CurrentWeatherData.m_PrecipitationVolume = precipitationVolume + snowVolume;
+        m_CurrentWeatherData.m_PrecipitationVolume += snowVolume;
         m_CurrentWeatherData.m_SnowVolume = snowVolume;
     }
 
@@ -338,18 +345,25 @@ public class OpenWeatherApi {
                 hourlyWeatherData.m_WindSpeed = hourJson.getDouble("wind_speed");
                 hourlyWeatherData.m_WeatherObj = parseWeatherJson(hourJson);
 
+                double windGust = 0.0;
+                try {
+                    windGust += hourJson.getDouble("wind_gust");
+                } catch (JSONException ignored) {}
+                hourlyWeatherData.m_WindGust = windGust;
+
                 double precipitationVolume = 0.0;
                 try {
                     JSONObject rain = hourJson.getJSONObject("rain");
                     precipitationVolume += rain.getDouble("1hr");
                 } catch (JSONException ignored) {}
+                hourlyWeatherData.m_PrecipitationVolume = precipitationVolume;
 
                 double snowVolume = 0.0;
                 try {
                     JSONObject snow = hourJson.getJSONObject("snow");
                     snowVolume += snow.getDouble("1hr");
                 } catch (JSONException ignored) {}
-                hourlyWeatherData.m_PrecipitationVolume = precipitationVolume + snowVolume;
+                hourlyWeatherData.m_PrecipitationVolume += snowVolume;
                 hourlyWeatherData.m_SnowVolume = snowVolume;
 
                 m_HourlyWeatherData.add(hourlyWeatherData);
@@ -375,16 +389,23 @@ public class OpenWeatherApi {
                 dailyWeatherData.m_WeatherObj = parseWeatherJson(dayJson);
                 dailyWeatherData.m_PercentCloudy = dayJson.getInt("clouds");
 
+                double windGust = 0.0;
+                try {
+                    windGust += dayJson.getDouble("wind_gust");
+                } catch (JSONException ignored) {}
+                dailyWeatherData.m_WindGust = windGust;
+
                 double precipitationVolume = 0.0;
                 try {
                     precipitationVolume = dayJson.getDouble("rain");
                 } catch(JSONException ignored) {}
+                dailyWeatherData.m_PrecipitationVolume = precipitationVolume;
 
                 double snowVolume = 0.0;
                 try {
                     snowVolume = dayJson.getDouble("snow");
                 } catch(JSONException ignored) {}
-                dailyWeatherData.m_PrecipitationVolume = precipitationVolume + snowVolume;
+                dailyWeatherData.m_PrecipitationVolume += snowVolume;
                 dailyWeatherData.m_SnowVolume = snowVolume;
 
             } catch (JSONException e) {
