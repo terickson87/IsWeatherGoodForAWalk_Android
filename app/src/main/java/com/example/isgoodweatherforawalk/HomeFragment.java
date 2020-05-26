@@ -1,6 +1,8 @@
 package com.example.isgoodweatherforawalk;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +14,14 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -135,27 +142,61 @@ public class HomeFragment extends Fragment {
     }
 
     private void makeMinutelyRainChart() {
-        // Get the minutely weather data
-        LineDataSet dataSet = buildLineGraphDataset(m_OpenWeatherApi.getMinutelyWeatherData());
-
-        // Set chart styling
-        dataSet.setColor(R.attr.colorPrimaryDark);
-        dataSet.setCircleColor(R.attr.colorPrimary);
-        dataSet.setCircleHoleColor(R.attr.colorPrimaryDark);
-        dataSet.setValueTextSize(8);
-        dataSet.setValueTextColor(R.attr.colorPrimaryDark);
-
         // Get the line chart
         LineChart lineChart = m_FragmentView.findViewById(R.id.homefrag_minutely_rain_chart);
 
-        // Set legend and axis lines
-        lineChart.getLegend().setTextSize(16);
-        lineChart.getLegend().setFormSize(16);
-        lineChart.getLegend().setDrawInside(false);
-        lineChart.getLegend().setXEntrySpace(5);
-        lineChart.getXAxis().setDrawGridLines(false);
-        lineChart.getAxisRight().setDrawGridLines(false);
-        lineChart.getAxisLeft().setDrawGridLines(false);
+        // Set chart styling
+        lineChart.getDescription().setEnabled(false);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setDrawBorders(true);
+        lineChart.setBorderWidth(1f); // dp
+        lineChart.setBorderColor(Color.LTGRAY);
+        lineChart.setDrawMarkers(false);
+
+        // Set Axis Styling
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawLabels(true);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setDrawLabels(true);
+        leftAxis.setDrawAxisLine(true);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+
+        lineChart.getAxisRight().setEnabled(false);
+
+        // Set legend
+        Legend legend = lineChart.getLegend();
+        legend.setEnabled(true);
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float sp = 14;
+        float px = sp*displayMetrics.scaledDensity;
+        float dp = px/displayMetrics.density;
+        legend.setTextSize(dp); // dp
+        legend.setDrawInside(false);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend.setForm(Legend.LegendForm.SQUARE);
+        legend.setFormSize(dp);
+
+        // Set the Axis Labels
+        // The yLabel is set with the legend
+        TextView xAxisLabel = m_FragmentView.findViewById(R.id.homefrag_chart_x_axis_label);
+        xAxisLabel.setText(R.string.homefrag_chart_x_axis_label);
+
+        // Get the minutely weather data
+        LineDataSet dataSet = buildLineGraphDataset(m_OpenWeatherApi.getMinutelyWeatherData());
+
+        // Set dataset styling
+        dataSet.setMode(LineDataSet.Mode.LINEAR);
+        dataSet.setColor(R.attr.colorPrimaryDark);
+        dataSet.setDrawCircles(false);
+        dataSet.setDrawValues(false);
 
         // Set chart data and redraw.
         LineData data = new LineData(dataSet);
@@ -175,7 +216,8 @@ public class HomeFragment extends Fragment {
                 entries.add(new Entry(diff_min, PrecipitationVolume));
             }
         }
-        return new LineDataSet(entries, "Minutely Rain");
+        String yLabel = getResources().getString(R.string.homefrag_chart_y_axis_label);
+        return new LineDataSet(entries, yLabel);
     }
 
     private void setTimeValue(TextView textView, Instant now, Instant other, Integer timeZoneOffset_s) {

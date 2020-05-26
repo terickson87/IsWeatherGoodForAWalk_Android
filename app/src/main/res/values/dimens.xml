@@ -1,3 +1,5 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="homefrag_chart_labelSize">14sp</dimen>
+    <dimen name="homefrag_chart_labelSize_sp_val">14</dimen>
 </resources>
