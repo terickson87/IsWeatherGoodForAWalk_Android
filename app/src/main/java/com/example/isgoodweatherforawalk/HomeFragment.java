@@ -133,6 +133,10 @@ public class HomeFragment extends Fragment {
         TextView homefragForcastTimeValue = m_FragmentView.findViewById(R.id.homefrag_forcast_time_value);
         setTimeValue(homefragForcastTimeValue, now, forecastTime, timeZoneOffset_s);
 
+        Instant nextRainTime = m_OpenWeatherApi.getNextRainTime();
+        TextView homefragNextRainTimeValue = m_FragmentView.findViewById(R.id.homefrag_next_rain_value);
+        setTimeValue(homefragNextRainTimeValue, now, nextRainTime, timeZoneOffset_s);
+
         // Set the icon
         String iconUrl = currentWeatherData.m_WeatherObj.getIconUrl();
         ImageView iconImageView = m_FragmentView.findViewById(R.id.homefrag_weather_icon);
