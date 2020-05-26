@@ -26,4 +26,6 @@
     <string name="homefrag_forecast_time_default_value">6 pm (30 min ago)</string>
     <string name="homefrag_chart_y_axis_label">Rain (mm)</string>
     <string name="homefrag_chart_x_axis_label">Minutes from now</string>
+    <string name="homefrag_next_rain_title">Next Rain:</string>
+    <string name="homefrag_next_rain_value">6 pm (in 30 min)</string>
 </resources>
