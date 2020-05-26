@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
@@ -67,10 +68,8 @@ public class HomeFragment extends Fragment {
             Double longitude = m_GetLocation.getLongitude();
             String cityName = m_GetLocation.getCityName();
             String stateName = m_GetLocation.getStateName();
-            String fullLocationString = "Latitude: " + latitude.toString()
-                    + "\nLongitude: " + longitude.toString()
-                    + "\nCity: " + cityName
-                    + "\nState: " + stateName;
+            String countryCode = m_GetLocation.getCountryCode();
+            String fullLocationString = String.format(Locale.getDefault(), "(%.2f,%.2f) - %s, %s, %s", latitude, longitude, cityName, stateName, countryCode);
             TextView textView = fragmentView.findViewById(R.id.homefrag_title);
             textView.setText(fullLocationString);
             createAndCallWeatherApi();
@@ -142,6 +141,9 @@ public class HomeFragment extends Fragment {
         ImageView iconImageView = m_FragmentView.findViewById(R.id.homefrag_weather_icon);
         Picasso.with(requireActivity().getApplicationContext()).load(iconUrl).into(iconImageView);
 
+        // TODO if it isn't going to rain in the next hour, don't display the chart and display a message instead.
+        //  Also Have it have the X-Axis turn off too. Make a method to turn on/off both.
+        //  Have an if statement here to run the turn off, and have a call at the end of makeMinutelyRainChart() to turn it back on.
         makeMinutelyRainChart();
     }
 
