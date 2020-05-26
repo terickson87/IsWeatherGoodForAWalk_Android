@@ -135,11 +135,11 @@ public class TimeCalculation<T> {
         long diffVal;
         String diffLabel;
         diffVal = getHours(diff);
-        if (diffVal > 0) {
+        if (Math.abs(diffVal) > 0) {
             diffLabel = "hr";
         } else {
             diffVal = getMinutes(diff);
-            if (diffVal > 0) {
+            if (Math.abs(diffVal) > 0) {
                 diffLabel = "min";
             } else {
                 diffVal = getSeconds(diff);
