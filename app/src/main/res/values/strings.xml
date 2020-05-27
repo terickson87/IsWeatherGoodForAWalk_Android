@@ -28,4 +28,15 @@
     <string name="homefrag_chart_x_axis_label">Minutes from now</string>
     <string name="homefrag_next_rain_title">Next Rain:</string>
     <string name="homefrag_next_rain_value">6 pm (in 30 min)</string>
+    <string name="weather_card_temperature_title">Temperature / Feels Like:</string>
+    <string name="weather_card_temperature_default_value">0F / 0F</string>
+    <string name="weather_card_cloudy_title">% Cloudy:</string>
+    <string name="weather_card_cloudy_default_value">0%</string>
+    <string name="weather_card_rain_title">, Rain:</string>
+    <string name="weather_card_rain_default_value">0mm</string>
+    <string name="weather_card_good_walk_title">Good Walk?:</string>
+    <string name="weather_card_good_walk_default_value">Yes</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
