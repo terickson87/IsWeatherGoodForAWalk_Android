@@ -2,4 +2,9 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="homefrag_chart_labelSize">14sp</dimen>
     <dimen name="homefrag_chart_labelSize_sp_val">14</dimen>
+    <dimen name="weather_card_height">100dp</dimen>
+    <dimen name="weather_card_corner_radius">10dp</dimen>
+    <dimen name="weather_card_elevation">3dp</dimen>
+    <dimen name="weather_card_icon_height">90dp</dimen>
+    <dimen name="weather_card_icon_width">90dp</dimen>
 </resources>
