@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/weather_card"
+        android:id="@+id/hourly_weather_card"
         android:layout_width="match_parent"
         android:layout_height="@dimen/weather_card_height"
         android:backgroundTint="@color/colorPrimary"
@@ -20,7 +20,7 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/weather_card_icon"
+                android:id="@+id/hourly_weather_card_icon"
                 android:layout_width="@dimen/weather_card_icon_width"
                 android:layout_height="@dimen/weather_card_icon_height"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -28,24 +28,24 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
-                android:id="@+id/weather_card_temperature_layout"
+                android:id="@+id/hourly_weather_card_temperature_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/weather_card_cloudy_rain_layout"
+                app:layout_constraintBottom_toTopOf="@+id/hourly_weather_card_cloudy_rain_layout"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/weather_card_icon"
+                app:layout_constraintStart_toEndOf="@+id/hourly_weather_card_icon"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/weather_card_temperature_title"
+                    android:id="@+id/hourly_weather_card_temperature_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
                     android:text="@string/weather_card_temperature_title" />
 
                 <TextView
-                    android:id="@+id/weather_card_temperature_value"
+                    android:id="@+id/hourly_weather_card_temperature_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
@@ -54,24 +54,24 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/weather_card_cloudy_rain_layout"
+                android:id="@+id/hourly_weather_card_cloudy_rain_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/weather_card_good_walk_layout"
+                app:layout_constraintBottom_toTopOf="@+id/hourly_weather_card_good_walk_layout"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/weather_card_icon"
-                app:layout_constraintTop_toBottomOf="@+id/weather_card_temperature_layout">
+                app:layout_constraintStart_toEndOf="@+id/hourly_weather_card_icon"
+                app:layout_constraintTop_toBottomOf="@+id/hourly_weather_card_temperature_layout">
 
                 <TextView
-                    android:id="@+id/weather_card_cloudy_title"
+                    android:id="@+id/hourly_weather_card_cloudy_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/black"
                     android:text="@string/weather_card_cloudy_title" />
 
                 <TextView
-                    android:id="@+id/weather_card_cloudy_value"
+                    android:id="@+id/hourly_weather_card_cloudy_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
@@ -79,7 +79,7 @@
                     android:text="@string/weather_card_cloudy_default_value" />
 
                 <TextView
-                    android:id="@+id/weather_card_rain_title"
+                    android:id="@+id/hourly_weather_card_rain_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
@@ -87,7 +87,7 @@
                     android:text="@string/weather_card_rain_title" />
 
                 <TextView
-                    android:id="@+id/weather_card_rain_value"
+                    android:id="@+id/hourly_weather_card_rain_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
@@ -97,24 +97,33 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/weather_card_good_walk_layout"
+                android:id="@+id/hourly_weather_card_good_walk_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/weather_card_icon"
-                app:layout_constraintTop_toBottomOf="@+id/weather_card_cloudy_rain_layout">
+                app:layout_constraintStart_toEndOf="@+id/hourly_weather_card_icon"
+                app:layout_constraintTop_toBottomOf="@+id/hourly_weather_card_cloudy_rain_layout">
 
                 <TextView
-                    android:id="@+id/weather_card_good_walk_title"
+                    android:id="@+id/hourly_weather_card_description_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:textColor="@android:color/black"
+                    android:text="@string/weather_card_description_default_value" />
+
+                <TextView
+                    android:id="@+id/hourly_weather_card_good_walk_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
                     android:textColor="@android:color/black"
                     android:text="@string/weather_card_good_walk_title" />
 
                 <TextView
-                    android:id="@+id/weather_card_good_walk_value"
+                    android:id="@+id/hourly_weather_card_good_walk_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
