@@ -5,30 +5,55 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 public class HourlyFragment extends Fragment {
+    private MainActivity m_Activity;
+    private ArrayList<HourlyWeatherData> m_HourlyWeatherDataList;
 
-    @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_hourly, container, false);
+    public HourlyFragment() {
+        // Required empty public constructor
     }
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
-        view.findViewById(R.id.button_second).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(HourlyFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
-            }
-        });
+    public static HourlyFragment newInstance() {
+        HourlyFragment fragment = new HourlyFragment();
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//        if (getArguments() != null) {
+//            mParam1 = getArguments().getString(ARG_PARAM1);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
+//        }
+        m_Activity = (MainActivity) getActivity();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View fragmentView = inflater.inflate(R.layout.fragment_hourly, container, false);
+
+        // Set up the RecyclerView
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.hourly_recyclerview);
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        // Get the data
+        m_HourlyWeatherDataList = (ArrayList<HourlyWeatherData>) m_Activity.getHourlyWeatherData();
+
+        // specify an adapter
+        RecyclerView.Adapter adapter = new HourlyWeatherCardAdapter(m_HourlyWeatherDataList);
+        recyclerView.setAdapter(adapter);
+
+        return  fragmentView;
     }
 }

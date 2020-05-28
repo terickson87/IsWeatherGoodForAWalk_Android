@@ -74,7 +74,7 @@ public class HourlyWeatherCardAdapter extends RecyclerView.Adapter<HourlyWeather
     public void onBindViewHolder(@NonNull HourlyWeatherCardHolder holder, int position) {
         HourlyWeatherData hourlyWeatherData = m_HourlyWeatherDataList.get(position);
         String stringToSet;
-        
+
         stringToSet = hourlyWeatherData.m_Temperature.toString() + "°F"
                 + " / " + hourlyWeatherData.m_TemperatureFeelsLike.toString() + "°F";
         holder.m_HourlyWeatherCardTemperatureView.setText(stringToSet);
