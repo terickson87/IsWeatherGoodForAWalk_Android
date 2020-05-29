@@ -1,5 +1,6 @@
 package com.example.isgoodweatherforawalk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +15,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 
 public class HourlyWeatherCardAdapter extends RecyclerView.Adapter<HourlyWeatherCardAdapter.HourlyWeatherCardHolder> {
     private ArrayList<HourlyWeatherData> m_HourlyWeatherDataList;
+    private MainActivity m_MainActivity;
 
-    public HourlyWeatherCardAdapter(ArrayList<HourlyWeatherData> hourlyWeatherData) {
-        m_HourlyWeatherDataList = hourlyWeatherData;
+    public HourlyWeatherCardAdapter(MainActivity mainActivity, List<HourlyWeatherData> hourlyWeatherData) {
+        m_MainActivity = mainActivity;
+        m_HourlyWeatherDataList = new ArrayList<HourlyWeatherData>(hourlyWeatherData);
     }
 
     /**
@@ -75,6 +82,12 @@ public class HourlyWeatherCardAdapter extends RecyclerView.Adapter<HourlyWeather
         HourlyWeatherData hourlyWeatherData = m_HourlyWeatherDataList.get(position);
         String stringToSet;
 
+        Instant now = m_MainActivity.getCurrentNow();
+        Integer timeZoneOffset_s = m_MainActivity.getTimezoneOffset_s();
+        TimeCalculation timeCalculation = new TimeCalculation(now, hourlyWeatherData.m_Time, timeZoneOffset_s, TimeCalculation.mc_DateTimeFormatterPattern_TimeAndDate);
+        stringToSet = timeCalculation.getFullTimeString();
+        holder.m_HourlyWeatherCardDateView.setText(stringToSet);
+
         stringToSet = hourlyWeatherData.m_Temperature.toString() + "°F"
                 + " / " + hourlyWeatherData.m_TemperatureFeelsLike.toString() + "°F";
         holder.m_HourlyWeatherCardTemperatureView.setText(stringToSet);
@@ -110,6 +123,7 @@ public class HourlyWeatherCardAdapter extends RecyclerView.Adapter<HourlyWeather
     public class HourlyWeatherCardHolder extends RecyclerView.ViewHolder {
         public CardView m_HourlyWeatherCardView;
         public ImageView m_HourlyWeatherCardIconView;
+        public TextView m_HourlyWeatherCardDateView;
         public TextView m_HourlyWeatherCardTemperatureView;
         public TextView m_HourlyWeatherCardCloudyView;
         public TextView m_HourlyWeatherCardRainView;
@@ -120,6 +134,7 @@ public class HourlyWeatherCardAdapter extends RecyclerView.Adapter<HourlyWeather
             super(itemView);
             m_HourlyWeatherCardView = itemView.findViewById(R.id.hourly_weather_card);
             m_HourlyWeatherCardIconView = itemView.findViewById(R.id.hourly_weather_card_icon);
+            m_HourlyWeatherCardDateView = itemView.findViewById(R.id.hourly_weather_card_date_value);
             m_HourlyWeatherCardTemperatureView = itemView.findViewById(R.id.hourly_weather_card_temperature_value);
             m_HourlyWeatherCardCloudyView = itemView.findViewById(R.id.hourly_weather_card_cloudy_value);
             m_HourlyWeatherCardRainView = itemView.findViewById(R.id.hourly_weather_card_rain_value);

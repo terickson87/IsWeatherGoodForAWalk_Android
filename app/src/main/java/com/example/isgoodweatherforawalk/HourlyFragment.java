@@ -10,10 +10,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class HourlyFragment extends Fragment {
     private MainActivity m_Activity;
-    private ArrayList<HourlyWeatherData> m_HourlyWeatherDataList;
 
     public HourlyFragment() {
         // Required empty public constructor
@@ -48,10 +49,10 @@ public class HourlyFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         // Get the data
-        m_HourlyWeatherDataList = (ArrayList<HourlyWeatherData>) m_Activity.getHourlyWeatherData();
+        List<HourlyWeatherData> hourlyWeatherDataList = m_Activity.getHourlyWeatherData();
 
         // specify an adapter
-        RecyclerView.Adapter adapter = new HourlyWeatherCardAdapter(m_HourlyWeatherDataList);
+        RecyclerView.Adapter adapter = new HourlyWeatherCardAdapter(m_Activity, hourlyWeatherDataList);
         recyclerView.setAdapter(adapter);
 
         return  fragmentView;

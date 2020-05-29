@@ -95,6 +95,8 @@ public class HomeFragment extends Fragment {
                     sendWeatherData.sendMinutelyWeatherData(m_OpenWeatherApi.getMinutelyWeatherData());
                     sendWeatherData.sendHourlyWeatherData(m_OpenWeatherApi.getHourlyWeatherData());
                     sendWeatherData.sendDailyWeatherData(m_OpenWeatherApi.getDailyWeatherData());
+                    sendWeatherData.sendWeatherNow(m_OpenWeatherApi.getCurrentDateTime());
+                    sendWeatherData.sendTimezoneOffset_s(m_OpenWeatherApi.getTimezoneOffset_s());
                 }
                 setWeatherValues();
             }
@@ -227,7 +229,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void setTimeValue(TextView textView, Instant now, Instant other, Integer timeZoneOffset_s) {
-        TimeCalculation timeCalculation = new TimeCalculation(now, other, timeZoneOffset_s, "hh:mm aa");
+        TimeCalculation timeCalculation = new TimeCalculation(now, other, timeZoneOffset_s, TimeCalculation.mc_DateTimeFormatterPattern_JustTime);
         textView.setText(timeCalculation.getFullTimeString());
     }
 }

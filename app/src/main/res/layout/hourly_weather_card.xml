@@ -28,6 +28,25 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
+                android:id="@+id/hourly_weather_date_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/hourly_weather_card_temperature_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/hourly_weather_card_icon"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/hourly_weather_card_date_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/homefrag_forecast_time_default_value"
+                    android:textColor="@android:color/black"
+                    android:textStyle="italic" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/hourly_weather_card_temperature_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,7 +54,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/hourly_weather_card_cloudy_rain_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/hourly_weather_card_icon"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/hourly_weather_date_layout">
 
                 <TextView
                     android:id="@+id/hourly_weather_card_temperature_title"
