@@ -15,6 +15,9 @@ import java.util.List;
 
 public class HourlyFragment extends Fragment {
     private MainActivity m_Activity;
+    private RecyclerView m_RecyclerView;
+    private RecyclerView.Adapter m_Adapter;
+    private ArrayList<HourlyWeatherData> m_HourlyWeatherDataList;
 
     public HourlyFragment() {
         // Required empty public constructor
@@ -29,10 +32,6 @@ public class HourlyFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
         m_Activity = (MainActivity) getActivity();
     }
 
@@ -43,17 +42,17 @@ public class HourlyFragment extends Fragment {
         View fragmentView = inflater.inflate(R.layout.fragment_hourly, container, false);
 
         // Set up the RecyclerView
-        RecyclerView recyclerView = fragmentView.findViewById(R.id.hourly_recyclerview);
-        recyclerView.setHasFixedSize(true);
+        m_RecyclerView = fragmentView.findViewById(R.id.hourly_recyclerview);
+        m_RecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
+        m_RecyclerView.setLayoutManager(layoutManager);
 
         // Get the data
-        List<HourlyWeatherData> hourlyWeatherDataList = m_Activity.getHourlyWeatherData();
+        m_HourlyWeatherDataList = new ArrayList<HourlyWeatherData>(m_Activity.getHourlyWeatherData());
 
         // specify an adapter
-        RecyclerView.Adapter adapter = new HourlyWeatherCardAdapter(m_Activity, hourlyWeatherDataList);
-        recyclerView.setAdapter(adapter);
+        RecyclerView.Adapter adapter = new HourlyWeatherCardAdapter(m_Activity, m_HourlyWeatherDataList);
+        m_RecyclerView.setAdapter(adapter);
 
         return  fragmentView;
     }
