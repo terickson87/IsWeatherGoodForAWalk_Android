@@ -60,11 +60,11 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.homefrag_button_main_activity_2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Context context = v.getContext();
-                Intent intent = new Intent(context, MainActivity2.class);
-                Bundle bundle = new Bundle();
-                intent.putExtras(bundle);
-                context.startActivity(intent);
+//                Context context = v.getContext();
+//                Intent intent = new Intent(context, MainActivity2.class);
+//                Bundle bundle = new Bundle();
+//                intent.putExtras(bundle);
+//                context.startActivity(intent);
             }
         });
         hideChart();
