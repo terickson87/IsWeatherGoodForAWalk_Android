@@ -1,6 +1,7 @@
 package com.example.isgoodweatherforawalk;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -14,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -195,7 +197,7 @@ public class OpenWeatherApi {
         addParamToUrl(mc_LongTag + m_Longitude.toString());
         addParamToUrl(mc_UnitsTag + mc_UnitsImperial);
         addParamToUrl(mc_ApiTag + mc_ApiKey);
-        System.out.println(TAG + " - callApi Called. ApiUrl = \"" + m_ApiUrl + "\"");
+        Log.i(TAG, " - callApi Called. ApiUrl = \"" + m_ApiUrl + "\"");
 
         // Build request
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -209,7 +211,7 @@ public class OpenWeatherApi {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println(TAG + "callApi: There was an error with Volley's response.");
+                        Log.e(TAG, "callApi: There was an error with Volley's response.");
                     }
                 });
 
@@ -228,7 +230,7 @@ public class OpenWeatherApi {
     }
 
     private void parseResponseJson() {
-        System.out.println(TAG + " - parseResponseJson Called.");
+        Log.i(TAG, " - parseResponseJson Called.");
         String currentTag = "current";
         String minutelyTag = "minutely";
         String hourlyTag = "hourly";
@@ -249,7 +251,7 @@ public class OpenWeatherApi {
     }
 
     public void parseResponse(JSONObject response) {
-        System.out.println(TAG + " - parseResponse Called.");
+        Log.i(TAG, " - parseResponse Called.");
         m_ResponseJson = response;
         parseResponseJson();
         parseCurrent();
@@ -259,7 +261,7 @@ public class OpenWeatherApi {
     }
 
     private WeatherObj parseWeatherJson(JSONObject parentObjOfWeatherJsonArr) {
-        System.out.println(TAG + " - parseWeatherJson Called.");
+        Log.i(TAG, " - parseWeatherJson Called.");
         WeatherObj weatherObj = new WeatherObj();
         JSONArray weatherJsonArr;
         try {
@@ -277,7 +279,7 @@ public class OpenWeatherApi {
     }
 
     private void parseCurrent() {
-        System.out.println(TAG + " - ParseCurrent Called.");
+        Log.i(TAG, " - ParseCurrent Called.");
         m_CurrentWeatherData = new CurrentWeatherData();
         try {
             m_CurrentWeatherData.m_Time = Instant.ofEpochSecond(m_CurrentJson.getLong("dt"));
@@ -315,8 +317,8 @@ public class OpenWeatherApi {
     }
 
     private void parseMinutely() {
-        System.out.println(TAG + " - parseMinutely Called.");
-        m_MinutelyWeatherData = new LinkedList<>();
+        Log.i(TAG, " - parseMinutely Called.");
+        m_MinutelyWeatherData = new ArrayList<>();
         try {
             for (int iMinute = 0; iMinute < m_MinutelyJson.length(); iMinute++) {
                 JSONObject minuteJson = m_MinutelyJson.getJSONObject(iMinute);
@@ -335,8 +337,8 @@ public class OpenWeatherApi {
     }
 
     private void parseHourly() {
-        System.out.println(TAG + " - parseHourly Called.");
-        m_HourlyWeatherData = new LinkedList<>();
+        Log.i(TAG, " - parseHourly Called.");
+        m_HourlyWeatherData = new ArrayList<>();
         try {
             for (int iHour = 0; iHour < m_HourlyJson.length(); iHour++) {
                 JSONObject hourJson = m_HourlyJson.getJSONObject(iHour);
@@ -378,8 +380,8 @@ public class OpenWeatherApi {
     }
 
     private void parseDaily() {
-        System.out.println(TAG + " - parseDaily Called.");
-        m_DailyWeatherData = new LinkedList<>();
+        Log.i(TAG, " - parseDaily Called.");
+        m_DailyWeatherData = new ArrayList<>();
         for (int iDay = 0; iDay < m_DailyJson.length(); iDay++) {
             DailyWeatherData dailyWeatherData = new DailyWeatherData();
             try {

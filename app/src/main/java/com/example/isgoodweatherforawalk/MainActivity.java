@@ -2,48 +2,46 @@ package com.example.isgoodweatherforawalk;
 
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import org.json.JSONObject;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 
 // TODO move the location and weather fetches to the MainActivity
 // TODO add swipe to refresh
-public class MainActivity extends AppCompatActivity implements SendWeatherData, SendLocationData {
+public class MainActivity extends AppCompatActivity {
     private GetLocation m_GetLocation;
-    private CurrentWeatherData m_CurrentWeatherData;
-    private List<MinutelyWeatherData> m_MinutelyWeatherData;
-    private List<HourlyWeatherData> m_HourlyWeatherData;
-    private List<DailyWeatherData> m_DailyWeatherData;
-    private Instant m_Now;
-    private Integer m_TimezoneOffset_s;
+    private OpenWeatherApi m_OpenWeatherApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        showProgressBar();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        m_GetLocation = new GetLocation(this);
-        m_GetLocation.getPermissions(true);
+        getAndUseLocation();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         m_GetLocation.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        createAndCallWeatherApi();
     }
 
     @Override
@@ -79,66 +77,69 @@ public class MainActivity extends AppCompatActivity implements SendWeatherData, 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void sendCurrentWeatherData(CurrentWeatherData currentWeatherData) {
-        m_CurrentWeatherData = currentWeatherData;
+    private void showProgressBar() {
+        findViewById(R.id.content_main).setVisibility(View.GONE);
+        findViewById(R.id.progress_bar_main_linear_layout).setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void sendMinutelyWeatherData(List<MinutelyWeatherData> minutelyWeatherData) {
-        m_MinutelyWeatherData = minutelyWeatherData;
+    private void showContent() {
+        findViewById(R.id.content_main).setVisibility(View.VISIBLE);
+        findViewById(R.id.progress_bar_main_linear_layout).setVisibility(View.GONE);
     }
 
-    @Override
-    public void sendHourlyWeatherData(List<HourlyWeatherData> hourlyWeatherData) {
-        m_HourlyWeatherData = hourlyWeatherData;
+    private void getAndUseLocation() {
+        m_GetLocation = new GetLocation(this);
+        if (m_GetLocation.isLocationPermissions()) {
+            m_GetLocation.getLocation();
+            createAndCallWeatherApi();
+        } else {
+            m_GetLocation.getPermissions(true);
+            // see onRequestPermissionsResult()
+        }
     }
 
-    @Override
-    public void sendDailyWeatherData(List<DailyWeatherData> dailyWeatherData) {
-        m_DailyWeatherData = dailyWeatherData;
+    private void createAndCallWeatherApi() {
+        m_OpenWeatherApi = new OpenWeatherApi(getApplicationContext(), m_GetLocation.getLatitude(), m_GetLocation.getLongitude());
+        ApiCallback apiCallback = new ApiCallback() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                m_OpenWeatherApi.parseResponse(response);
+                showContent();
+            }
+        };
+        m_OpenWeatherApi.callApi(apiCallback);
     }
 
-    @Override
-    public void sendWeatherNow(Instant now) {
-        m_Now = now;
-    }
-
-    @Override
-    public void sendTimezoneOffset_s(Integer timezoneOffset_s) {
-        m_TimezoneOffset_s = timezoneOffset_s;
-    }
-
-    @Override
-    public void sendLocation(GetLocation getLocation) {
-        m_GetLocation = getLocation;
-    }
-
+    // Getters
     public GetLocation getGetLocation() {
         return m_GetLocation;
     }
 
     public CurrentWeatherData getCurrentWeatherData() {
-        return m_CurrentWeatherData;
+        return m_OpenWeatherApi.getCurrentWeatherData();
     }
 
     public Instant getCurrentNow() {
-        return m_Now;
+        return m_OpenWeatherApi.getCurrentDateTime();
     }
 
     public Integer getTimezoneOffset_s() {
-        return  m_TimezoneOffset_s;
+        return  m_OpenWeatherApi.getTimezoneOffset_s();
     }
 
     public List<MinutelyWeatherData> getMinutelyWeatherData() {
-        return m_MinutelyWeatherData;
+        return m_OpenWeatherApi.getMinutelyWeatherData();
     }
 
     public List<HourlyWeatherData> getHourlyWeatherData() {
-        return m_HourlyWeatherData;
+        return m_OpenWeatherApi.getHourlyWeatherData();
     }
 
     public List<DailyWeatherData> getDailyWeatherData() {
-        return m_DailyWeatherData;
+        return m_OpenWeatherApi.getDailyWeatherData();
+    }
+
+    public Instant getNextRainTime() {
+        return m_OpenWeatherApi.getNextRainTime();
     }
 }

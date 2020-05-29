@@ -1,5 +1,7 @@
 package com.example.isgoodweatherforawalk;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -14,43 +16,40 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONObject;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class HomeFragment extends Fragment {
+    private MainActivity m_Activity;
     private View m_FragmentView;
-    private GetLocation m_GetLocation;
-    private OpenWeatherApi m_OpenWeatherApi;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        m_Activity = (MainActivity) getActivity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         m_FragmentView = inflater.inflate(R.layout.fragment_home, container, false);
-
-        getAndUseLocation(m_FragmentView);
-
         return m_FragmentView;
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.homefrag_button_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 NavHostFragment.findNavController(HomeFragment.this)
@@ -58,54 +57,43 @@ public class HomeFragment extends Fragment {
             }
         });
 
-    }
-
-    private void getAndUseLocation(View fragmentView) {
-        m_GetLocation = new GetLocation(getActivity());
-        m_GetLocation.getLocation();
-        if (m_GetLocation.isLocationPermissions()) {
-            Double latitude = m_GetLocation.getLatitude();
-            Double longitude = m_GetLocation.getLongitude();
-            String cityName = m_GetLocation.getCityName();
-            String stateName = m_GetLocation.getStateName();
-            String countryCode = m_GetLocation.getCountryCode();
-            String fullLocationString = String.format(Locale.getDefault(), "(%.2f,%.2f) - %s, %s, %s", latitude, longitude, cityName, stateName, countryCode);
-            TextView textView = fragmentView.findViewById(R.id.homefrag_title);
-            textView.setText(fullLocationString);
-            createAndCallWeatherApi();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        m_GetLocation.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        createAndCallWeatherApi();
-    }
-
-    private void createAndCallWeatherApi() {
-        m_OpenWeatherApi = new OpenWeatherApi(getContext(), m_GetLocation.getLatitude(), m_GetLocation.getLongitude());
-        ApiCallback apiCallback = new ApiCallback() {
+        view.findViewById(R.id.homefrag_button_main_activity_2).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSuccess(JSONObject response) {
-                m_OpenWeatherApi.parseResponse(response);
-                SendWeatherData sendWeatherData = (SendWeatherData) getActivity();
-                if (sendWeatherData != null) {
-                    sendWeatherData.sendCurrentWeatherData(m_OpenWeatherApi.getCurrentWeatherData());
-                    sendWeatherData.sendMinutelyWeatherData(m_OpenWeatherApi.getMinutelyWeatherData());
-                    sendWeatherData.sendHourlyWeatherData(m_OpenWeatherApi.getHourlyWeatherData());
-                    sendWeatherData.sendDailyWeatherData(m_OpenWeatherApi.getDailyWeatherData());
-                    sendWeatherData.sendWeatherNow(m_OpenWeatherApi.getCurrentDateTime());
-                    sendWeatherData.sendTimezoneOffset_s(m_OpenWeatherApi.getTimezoneOffset_s());
-                }
-                setWeatherValues();
+            public void onClick(View v) {
+                Context context = v.getContext();
+                Intent intent = new Intent(context, MainActivity2.class);
+                Bundle bundle = new Bundle();
+                intent.putExtras(bundle);
+                context.startActivity(intent);
             }
-        };
-        m_OpenWeatherApi.callApi(apiCallback);
+        });
+        hideChart();
     }
 
-    private void setWeatherValues() {
-        CurrentWeatherData currentWeatherData = m_OpenWeatherApi.getCurrentWeatherData();
+    /**
+     * Called when the Fragment is visible to the user.  This is generally
+     * tied to Activity#onStart() Activity.onStart of the containing
+     * Activity's lifecycle.
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    public void setLocationValues() {
+        GetLocation getLocation = m_Activity.getGetLocation();
+        Double latitude = getLocation.getLatitude();
+        Double longitude = getLocation.getLongitude();
+        String cityName = getLocation.getCityName();
+        String stateName = getLocation.getStateName();
+        String countryCode = getLocation.getCountryCode();
+        String fullLocationString = String.format(Locale.getDefault(), "(%.2f,%.2f) - %s, %s, %s", latitude, longitude, cityName, stateName, countryCode);
+        TextView textView = m_FragmentView.findViewById(R.id.homefrag_title);
+        textView.setText(fullLocationString);
+    }
+
+    public void setWeatherValues() {
+        CurrentWeatherData currentWeatherData = m_Activity.getCurrentWeatherData();
 
         TextView homefragTemperatureValue = m_FragmentView.findViewById(R.id.homefrag_temperature_value);
         String temperatureString = currentWeatherData.m_Temperature.toString() + " °F";
@@ -120,7 +108,7 @@ public class HomeFragment extends Fragment {
         homefragPercentCloudyValue.setText(percentCloudString);
 
         Instant now = Instant.now();
-        Integer timeZoneOffset_s = m_OpenWeatherApi.getTimezoneOffset_s();
+        Integer timeZoneOffset_s = m_Activity.getTimezoneOffset_s();
 
         Instant sunrise = currentWeatherData.m_SunriseTime;
         TextView homefragSunriseValue = m_FragmentView.findViewById(R.id.homefrag_sunrise_value);
@@ -134,7 +122,7 @@ public class HomeFragment extends Fragment {
         TextView homefragForcastTimeValue = m_FragmentView.findViewById(R.id.homefrag_forcast_time_value);
         setTimeValue(homefragForcastTimeValue, now, forecastTime, timeZoneOffset_s);
 
-        Instant nextRainTime = m_OpenWeatherApi.getNextRainTime();
+        Instant nextRainTime = m_Activity.getNextRainTime();
         TextView homefragNextRainTimeValue = m_FragmentView.findViewById(R.id.homefrag_next_rain_value);
         setTimeValue(homefragNextRainTimeValue, now, nextRainTime, timeZoneOffset_s);
 
@@ -149,7 +137,21 @@ public class HomeFragment extends Fragment {
         makeMinutelyRainChart();
     }
 
+    private void hideChart() {
+        m_FragmentView.findViewById(R.id.homefrag_minutely_rain_chart).setVisibility(View.GONE);
+        m_FragmentView.findViewById(R.id.homefrag_chart_x_axis_label).setVisibility(View.GONE);
+        m_FragmentView.findViewById(R.id.homefrag_chart_no_rain_text).setVisibility(View.VISIBLE);
+    }
+
+    private void showChart() {
+        m_FragmentView.findViewById(R.id.homefrag_minutely_rain_chart).setVisibility(View.VISIBLE);
+        m_FragmentView.findViewById(R.id.homefrag_chart_x_axis_label).setVisibility(View.VISIBLE);
+        m_FragmentView.findViewById(R.id.homefrag_chart_no_rain_text).setVisibility(View.GONE);
+    }
+
     private void makeMinutelyRainChart() {
+        hideChart();
+
         // Get the line chart
         LineChart lineChart = m_FragmentView.findViewById(R.id.homefrag_minutely_rain_chart);
 
@@ -198,7 +200,7 @@ public class HomeFragment extends Fragment {
         xAxisLabel.setText(R.string.homefrag_chart_x_axis_label);
 
         // Get the minutely weather data
-        LineDataSet dataSet = buildLineGraphDataset(m_OpenWeatherApi.getMinutelyWeatherData());
+        LineDataSet dataSet = buildLineGraphDataset(m_Activity.getMinutelyWeatherData());
 
         // Set dataset styling
         dataSet.setMode(LineDataSet.Mode.LINEAR);
@@ -210,6 +212,16 @@ public class HomeFragment extends Fragment {
         LineData data = new LineData(dataSet);
         lineChart.setData(data);
         lineChart.invalidate();
+
+        Instant now = m_Activity.getCurrentNow();
+        Instant nextRain = m_Activity.getNextRainTime();
+        int diff_sec = (int) (now.getEpochSecond() - nextRain.getEpochSecond());
+        if (diff_sec < TimeCalculation.SEC_IN_HR) {
+            // next rain is in less than an hour and should therefore be in the minutely rain data
+            showChart();
+        } else {
+            hideChart();
+        }
     }
 
     private LineDataSet buildLineGraphDataset(List<MinutelyWeatherData> minutelyWeatherDataList) {
@@ -217,9 +229,9 @@ public class HomeFragment extends Fragment {
         for (int iMinute = 0; iMinute < minutelyWeatherDataList.size(); iMinute++) {
             MinutelyWeatherData minutelyWeatherData = minutelyWeatherDataList.get(iMinute);
             Instant time = minutelyWeatherData.m_Time;
-            int diff_sec = (int) (time.getEpochSecond() - m_OpenWeatherApi.getCurrentWeatherData().m_Time.getEpochSecond());
+            int diff_sec = (int) (time.getEpochSecond() - m_Activity.getCurrentWeatherData().m_Time.getEpochSecond());
             if (diff_sec >= 0) {
-                int diff_min = diff_sec/60;
+                int diff_min = diff_sec/TimeCalculation.SEC_IN_MIN;
                 float PrecipitationVolume = (float) (double) minutelyWeatherData.m_PrecipitationVolume;
                 entries.add(new Entry(diff_min, PrecipitationVolume));
             }

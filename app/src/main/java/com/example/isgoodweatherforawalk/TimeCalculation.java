@@ -7,9 +7,15 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 public class TimeCalculation {
+    // Static Constants
+    public static final int SEC_IN_MIN = 60;
+    public static final int MIN_IN_HR = 60;
+    public static final int SEC_IN_HR = SEC_IN_MIN*MIN_IN_HR;
+
     // Member Variables
     private Instant m_Now;
     private Instant m_Other;
+    private Long m_Diff_s;
     private Integer m_TimezoneOffset_s = 0;
     private ZoneOffset m_ZoneOffset = ZoneOffset.ofHoursMinutesSeconds(0, 0, m_TimezoneOffset_s);
     private ZoneId m_ZoneId = ZoneId.ofOffset("UTC", m_ZoneOffset);
@@ -84,6 +90,10 @@ public class TimeCalculation {
         return m_LocalDateTimeString;
     }
 
+    public Long getDiff_s() {
+        return m_Diff_s;
+    }
+
     public String getDiffString() {
         return m_DiffString;
     }
@@ -143,23 +153,23 @@ public class TimeCalculation {
 
     private void buildDiffString() {
         // Get the time difference string, e.g. 6 hr ago
-        long diff = m_Now.getEpochSecond() - m_Other.getEpochSecond();
+        m_Diff_s = m_Now.getEpochSecond() - m_Other.getEpochSecond();
         long diffVal;
         String diffLabel;
-        diffVal = getHours(diff);
+        diffVal = getHours(m_Diff_s);
         if (Math.abs(diffVal) > 0) {
             diffLabel = "hr";
         } else {
-            diffVal = getMinutes(diff);
+            diffVal = getMinutes(m_Diff_s);
             if (Math.abs(diffVal) > 0) {
                 diffLabel = "min";
             } else {
-                diffVal = getSeconds(diff);
+                diffVal = getSeconds(m_Diff_s);
                 diffLabel = "s";
             }
         }
 
-        if (diff > 0) { // now is after other, ie other happened first
+        if (m_Diff_s > 0) { // now is after other, ie other happened first
             m_DiffString = diffVal + " " + diffLabel + " " + "ago";
         } else { // other is after now, ie now happened first
             m_DiffString = "in"+ " " + -diffVal + " " + diffLabel;
@@ -167,35 +177,35 @@ public class TimeCalculation {
     }
 
     private int getHours(int seconds) {
-        return seconds/3600;
+        return seconds/SEC_IN_HR;
     }
 
     private int getMinutes(int seconds) {
         int hours = getHours(seconds);
-        seconds -= hours*3600;
-        return seconds/60;
+        seconds -= hours*SEC_IN_HR;
+        return seconds/SEC_IN_MIN;
     }
 
     private int getSeconds(int seconds) {
         int hours = getHours(seconds);
         int minutes = getMinutes(seconds);
-        return seconds - hours*3600 - minutes*60;
+        return seconds - hours*SEC_IN_HR - minutes*MIN_IN_HR;
     }
 
     private long getHours(long seconds) {
-        return seconds/3600;
+        return seconds/SEC_IN_HR;
     }
 
     private long getMinutes(long seconds) {
         long hours = getHours(seconds);
-        seconds -= hours*3600;
-        return seconds/60;
+        seconds -= hours*SEC_IN_HR;
+        return seconds/SEC_IN_MIN;
     }
 
     private long getSeconds(long seconds) {
         long hours = getHours(seconds);
         long minutes = getMinutes(seconds);
-        return seconds - hours*3600 - minutes*60;
+        return seconds - hours*SEC_IN_HR - minutes*MIN_IN_HR;
     }
 
     private void buildFullTimeString() {

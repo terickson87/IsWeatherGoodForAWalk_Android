@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
@@ -56,10 +57,10 @@ public class GetLocation implements LocationListener {
 
     public void getPermissions(boolean getLocation) {
         if (!isCoarseLocationPermission() || !isFineLocationPermission()) {
-            System.out.println(TAG + " - GetPermissions: Location Permissions Not Yet Granted.");
+            Log.i(TAG, " - GetPermissions: Location Permissions Not Yet Granted.");
             ActivityCompat.requestPermissions(m_Activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, mc_REQUEST_LOCATION_PERMISSION);
         } else {
-            System.out.println(TAG + " - GetPermissions: Location Permissions Granted.");
+            Log.i(TAG, " - GetPermissions: Location Permissions Granted.");
             if (getLocation) {
                 getAndHandleGoodLocation();
             }
@@ -77,10 +78,10 @@ public class GetLocation implements LocationListener {
         Location location = m_LocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         if (location != null) {
-            System.out.println(TAG + "getAndHandleGoodLocation - Non Null Location");
+            Log.i(TAG, "getAndHandleGoodLocation - Non Null Location");
             handleGoodLocation(location);
         } else {
-            System.out.println(TAG + "getAndHandleGoodLocation - Null Location");
+            Log.i(TAG, "getAndHandleGoodLocation - Null Location");
             Criteria criteria = new Criteria();
             String bestProvider = String.valueOf(m_LocationManager.getBestProvider(criteria, true)).toString();
             m_LocationManager.requestLocationUpdates(bestProvider, 1000, 0, this);
@@ -90,27 +91,25 @@ public class GetLocation implements LocationListener {
     private void handleGoodLocation(Location location) {
         m_Latitude = location.getLatitude();
         m_Longitude = location.getLongitude();
-        System.out.println(TAG + " handleGoodLocation() - " + "lat: " + m_Latitude + ", long: " + m_Longitude);
+        Log.i(TAG, " handleGoodLocation() - " + "lat: " + m_Latitude + ", long: " + m_Longitude);
         Address address = getAddress(m_Activity, m_Latitude, m_Longitude);
         m_CityName = getCityName(address);
-        System.out.println("City Name: " + m_CityName);
+        Log.i(TAG, "City Name: " + m_CityName);
         m_StateName = getStateName(address);
-        System.out.println("State Name: " + m_StateName);
+        Log.i(TAG, "State Name: " + m_StateName);
         m_CountryCode = getCountryCode(address);
-        System.out.println("Country Code: " + m_CountryCode);
-        SendLocationData sendLocationData = (SendLocationData) m_Activity;
-        sendLocationData.sendLocation(this);
+        Log.i(TAG, "Country Code: " + m_CountryCode);
     }
 
     // ***** Utility Methods *****
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == mc_REQUEST_LOCATION_PERMISSION) {
             if(grantResults.length==1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                System.out.println("onRequestPermissionsResult: Permission granted");
+                Log.i(TAG, "onRequestPermissionsResult: Permission granted");
                 getAndHandleGoodLocation();
             }
         } else {
-            System.out.println(TAG + "onRequestPermissionsResult(): requestCode (" + requestCode + ") not equal to " + mc_REQUEST_LOCATION_PERMISSION);
+            Log.i(TAG, "onRequestPermissionsResult(): requestCode (" + requestCode + ") not equal to " + mc_REQUEST_LOCATION_PERMISSION);
         }
     }
 
@@ -121,7 +120,7 @@ public class GetLocation implements LocationListener {
             addresses = geocoder.getFromLocation(latitude, longitude, mc_MAX_LOCATION_RESULTS);
             return addresses.get(0);
         } catch (IOException e) {
-            System.out.println("Error getting Address: " + e.getMessage());
+            Log.e(TAG, "Error getting Address: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -190,7 +189,7 @@ public class GetLocation implements LocationListener {
         m_LocationManager.removeUpdates(this);
 
         // Handle good location
-        System.out.println(TAG + "onLocationChange(): Location Received");
+        Log.i(TAG, "onLocationChange(): Location Received");
         handleGoodLocation(location);
     }
 
