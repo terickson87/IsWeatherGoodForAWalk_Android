@@ -6,7 +6,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-public class TimeCalculation<T> {
+public class TimeCalculation {
     // Member Variables
     private Instant m_Now;
     private Instant m_Other;
@@ -14,7 +14,9 @@ public class TimeCalculation<T> {
     private ZoneOffset m_ZoneOffset = ZoneOffset.ofHoursMinutesSeconds(0, 0, m_TimezoneOffset_s);
     private ZoneId m_ZoneId = ZoneId.ofOffset("UTC", m_ZoneOffset);
     private LocalDateTime m_LocalDateTime;
-    private String m_DateTimeFormatterPattern = "h:mm a";
+    private String m_DateTimeFormatterPattern = mc_DateTimeFormatterPattern_JustTime;
+    public static final String mc_DateTimeFormatterPattern_JustTime = "h:mm a";
+    public static final String mc_DateTimeFormatterPattern_TimeAndDate = "E, MMM dd, h:mm a";
     private DateTimeFormatter m_DateTimeFormatter = DateTimeFormatter.ofPattern(m_DateTimeFormatterPattern);
     private String m_LocalDateTimeString;
     private String m_DiffString;
@@ -103,12 +105,22 @@ public class TimeCalculation<T> {
 
     public void setDateTimePattern(String dateTimePattern) {
         m_DateTimeFormatterPattern = dateTimePattern;
-        buildLocalDateTimeString();
+        buildAllStrings();
     }
 
     public void setTimezoneOffset_s(Integer timezoneOffset_s) {
         m_TimezoneOffset_s = timezoneOffset_s;
-        buildLocalDateTimeString();
+        buildAllStrings();
+    }
+
+    public void setFormatJustTime() {
+        m_DateTimeFormatterPattern = mc_DateTimeFormatterPattern_JustTime;
+        buildAllStrings();
+    }
+
+    public void setFormatTimeAndDate() {
+        m_DateTimeFormatterPattern = mc_DateTimeFormatterPattern_TimeAndDate;
+        buildAllStrings();
     }
 
     // Calculation Methods

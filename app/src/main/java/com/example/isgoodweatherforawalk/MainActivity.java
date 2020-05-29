@@ -14,14 +14,19 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.time.Instant;
 import java.util.List;
 
+// TODO move the location and weather fetches to the MainActivity
+// TODO add swipe to refresh
 public class MainActivity extends AppCompatActivity implements SendWeatherData, SendLocationData {
     private GetLocation m_GetLocation;
     private CurrentWeatherData m_CurrentWeatherData;
     private List<MinutelyWeatherData> m_MinutelyWeatherData;
     private List<HourlyWeatherData> m_HourlyWeatherData;
     private List<DailyWeatherData> m_DailyWeatherData;
+    private Instant m_Now;
+    private Integer m_TimezoneOffset_s;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +100,16 @@ public class MainActivity extends AppCompatActivity implements SendWeatherData, 
     }
 
     @Override
+    public void sendWeatherNow(Instant now) {
+        m_Now = now;
+    }
+
+    @Override
+    public void sendTimezoneOffset_s(Integer timezoneOffset_s) {
+        m_TimezoneOffset_s = timezoneOffset_s;
+    }
+
+    @Override
     public void sendLocation(GetLocation getLocation) {
         m_GetLocation = getLocation;
     }
@@ -105,6 +120,14 @@ public class MainActivity extends AppCompatActivity implements SendWeatherData, 
 
     public CurrentWeatherData getCurrentWeatherData() {
         return m_CurrentWeatherData;
+    }
+
+    public Instant getCurrentNow() {
+        return m_Now;
+    }
+
+    public Integer getTimezoneOffset_s() {
+        return  m_TimezoneOffset_s;
     }
 
     public List<MinutelyWeatherData> getMinutelyWeatherData() {

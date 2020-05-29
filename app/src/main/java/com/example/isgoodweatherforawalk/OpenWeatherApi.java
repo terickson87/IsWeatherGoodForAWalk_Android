@@ -174,6 +174,10 @@ public class OpenWeatherApi {
         return m_TimezoneOffset_s;
     }
 
+    public Instant getCurrentDateTime() {
+        return  m_CurrentDate;
+    }
+
     // Constructor
     public OpenWeatherApi(Context context, double latitude, double longitude) {
         m_Context = context;
