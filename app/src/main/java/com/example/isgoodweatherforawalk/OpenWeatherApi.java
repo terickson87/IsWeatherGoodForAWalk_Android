@@ -196,7 +196,8 @@ public class OpenWeatherApi {
         addParamToUrl(mc_LatTag + m_Latitude.toString());
         addParamToUrl(mc_LongTag + m_Longitude.toString());
         addParamToUrl(mc_UnitsTag + mc_UnitsImperial);
-        addParamToUrl(mc_ApiTag + mc_ApiKey);
+        String API_KEY = m_Context.getString(R.string.OPEN_WEATHER_API_KEY);
+        addParamToUrl(mc_ApiTag + API_KEY);
         Log.i(TAG, " - callApi Called. ApiUrl = \"" + m_ApiUrl + "\"");
 
         // Build request
