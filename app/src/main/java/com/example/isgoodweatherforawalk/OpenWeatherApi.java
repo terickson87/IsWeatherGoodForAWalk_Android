@@ -116,7 +116,7 @@ public class OpenWeatherApi {
 
     // Static Props
     private static final String TAG = "OpenWeatherApi";
-    private static final String mc_ApiKey =  "***REMOVED***";
+    private static final String mc_ApiKey =  "";
     private static final String mc_OneCallApiUrl = "https://api.openweathermap.org/data/2.5/onecall?";
     private static final String mc_ApiTag = "appid=";
     private static final String mc_LatTag = "lat=";
